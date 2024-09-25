@@ -1,0 +1,33 @@
+.data
+valsA real4 1.0, 9.0, -4.0
+valsB real4 2.0, -1.0, 3.4
+valsD real4 3.0, 2.0, -8.0
+resfinal real4 0.0, 0.0, 0.0
+.code
+entry_point proc
+mov RCX, 3 ; Кількість ітерацій
+xor RSI, RSI ; Обнулити зміщення
+lea R8, valsA ; Завантаження адреси valsA
+lea R9, valsB ; Завантаження адреси valsB
+lea R10, valsD ; Завантаження адреси valsD
+lea R15, resfinal ; Завантаження адреси resfinal
+loopa:
+fld real4 ptr[R8+RSI] ; Завантаження a з valsA
+fmul dword ptr[valsD+RSI]; Помножити a на d
+fmul dword ptr[six] ; Помножити результат на 6
+fld real4 ptr[R9+RSI] ; Завантаження b з valsB
+fsub ; Відняти b від 6*a*d
+fld real4 ptr[R8+RSI] ; Завантаження a знову
+fmul st, st ; Піднести a до квадрату
+fld real4 ptr[R10+RSI] ; Завантаження d з valsD
+fadd ; Додати d до a^2
+fsqrt ; Обчислити квадратний корінь
+fdiv ; Поділити (6*a*d - b) на sqrt(a^2 + d)
+fst real4 ptr[R15+RSI] ; Зберегти результат
+add RSI, 4 ; Збільшити зміщення на 4 (32 біти)
+loop loopa
+ret
+entry_point endp
+.data
+six real4 6.0
+end
